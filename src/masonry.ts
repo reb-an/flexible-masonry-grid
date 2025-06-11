@@ -20,13 +20,14 @@ export interface BreakpointGridProps {
   gap: number;
 }
 
+const ROW_UNIT = 10; //px
+
 export const generateMasonryGrid = (
   collection: CollectionProps[],
   parent: HTMLDivElement,
   layout: BreakpointGridProps[]
 ) => {
   const styleElm = document.createElement("style");
-
   const gridContainer = document.createElement("div");
 
   const itemContainers = collection.map((item) => {
@@ -38,75 +39,30 @@ export const generateMasonryGrid = (
   });
 
   layout.forEach(({ breakpoint, colCount, gap }) => {
-    const rowCount = Math.ceil(collection.length / colCount);
-
     const classPrefix = `masonry-grid-${breakpoint}`;
+    const containerClass = classPrefix;
+    gridContainer.classList.add(containerClass);
 
-    // Generate dynamic top shifts to create masonry effect
-    let cumulativeShiftPerCol = new Array(colCount).fill(0);
-    let cumulativeHeightPerCol = new Array(colCount).fill(0);
-
-    const maxInverseRatio = Math.max(
-      ...collection.map((item) => 1 / item.aspectRatio)
-    );
+    // Get actual column width minus gaps
+    const parentWidth = parent.clientWidth;
+    const totalGap = (colCount - 1) * gap;
+    const colWidth = (parentWidth - totalGap) / colCount;
 
     collection.forEach((item, idx) => {
-      const whichCol = idx % colCount;
-      const whichRow = Math.floor(idx / colCount);
-
-      const prevItem = collection[(whichRow - 1) * colCount + whichCol]; // item directly on top of current one
-      const prevItemHeightPerc = whichRow > 0 ? 1 / prevItem.aspectRatio : 0;
-      const currentItemRelativeHeight = 1 / item.aspectRatio / maxInverseRatio;
-
-      const shift =
-        whichRow > 0
-          ? Math.round((1 - prevItemHeightPerc / maxInverseRatio) * 100)
-          : 0;
-
-      cumulativeShiftPerCol[whichCol] += shift;
-      cumulativeHeightPerCol[whichCol] += currentItemRelativeHeight;
-
-      const itemClass = `${classPrefix}-item-${idx}`;
-
-      styleElm.innerHTML += `
-        @media (min-width: ${minWidthForBreakpoints[breakpoint]}px) {
-            .${itemClass} {
-                position: relative;
-                ${
-                  colCount > 1
-                    ? `top: -${cumulativeShiftPerCol[whichCol]}%;`
-                    : ""
-                }
-            }
-        }
-        `;
-
-      itemContainers[idx].classList.add(itemClass);
+      const itemHeightPx = colWidth / item.aspectRatio;
+      const span = Math.ceil(itemHeightPx / ROW_UNIT);
+      itemContainers[idx].style.gridRowEnd = `span ${span}`;
     });
-    const maxColHeight = Math.max(...cumulativeHeightPerCol);
-    const freeSpacePerc = (1 - maxColHeight / rowCount) * 100;
-
-    const containerClass = classPrefix;
-    gridContainer.classList.add(classPrefix);
 
     styleElm.innerHTML += `
-        @media (min-width: ${minWidthForBreakpoints[breakpoint]}px) {
-            .${containerClass} {
-                display: grid;
-                gap: ${gap}px;
-                grid-template-columns: repeat(${colCount}, minmax(0, 1fr));
-                ${
-                  colCount > 1
-                    ? ` grid-template-rows: repeat(${Math.ceil(
-                        collection.length / colCount
-                      )}, minmax(0, 1fr)); 
-                margin-bottom: -${freeSpacePerc}%;`
-                    : ""
-                }
-                
-            }
+      @media (min-width: ${minWidthForBreakpoints[breakpoint]}px) {
+        .${containerClass} {
+          display: grid;
+          gap: ${gap}px;
+          grid-template-columns: repeat(${colCount}, minmax(0, 1fr));
         }
-        `;
+      }
+    `;
   });
 
   document.head.appendChild(styleElm);
