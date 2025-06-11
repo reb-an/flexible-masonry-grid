@@ -1,12 +1,13 @@
 import {
-  generateMasonryGrid4 as generateMasonryGrid,
+  generateMasonryGrid as generateMasonryGrid,
   type CollectionProps,
 } from "./masonry.ts";
 import "./style.css";
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = /* html */ `
   <div>    
-    <div id="parent" class="w-full"></div>
+    <div id="parent" class="w-full bg-purple-100"></div>
+    <div><h1>HELLO</h1></div>
   </div>
 `;
 
@@ -167,7 +168,7 @@ const images: CollectionProps[] = [
   },
 ];
 
-generateMasonryGrid(images, parent, [
+generateMasonryGrid(images.filter((_,idx) => idx<15), parent, [
   { breakpoint: "default", colCount: 1, gap: 8 },
   { breakpoint: "md", colCount: 3, gap: 8 },
   { breakpoint: "lg", colCount: 4, gap: 8 },
