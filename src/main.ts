@@ -59,7 +59,7 @@ const images: CollectionProps[] = [
     htmlElm: generateImage(
       "https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image.jpg"
     ),
-    aspectRatio: 0.79,
+    aspectRatio: 0.794307,
   },
   {
     htmlElm: generateImage(
@@ -89,7 +89,7 @@ const images: CollectionProps[] = [
     htmlElm: generateImage(
       "https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image.jpg"
     ),
-    aspectRatio: 0.79,
+    aspectRatio: 0.794307,
   },
   {
     htmlElm: generateImage(
@@ -119,7 +119,7 @@ const images: CollectionProps[] = [
     htmlElm: generateImage(
       "https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image.jpg"
     ),
-    aspectRatio: 0.79,
+    aspectRatio: 0.794307,
   },
   {
     htmlElm: generateImage(
@@ -149,7 +149,7 @@ const images: CollectionProps[] = [
     htmlElm: generateImage(
       "https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image.jpg"
     ),
-    aspectRatio: 0.79,
+    aspectRatio: 0.794307,
   },
   {
     htmlElm: generateImage(
@@ -169,8 +169,8 @@ generateMasonryGrid(
   images.filter((_, idx) => idx < 15),
   parent,
   [
-    { breakpoint: "default", colCount: 1, gap: 8 },
-    { breakpoint: "md", colCount: 3, gap: 0 },
-    { breakpoint: "lg", colCount: 4, gap: 8 },
+    { breakpoint: "default", colCount: 1, gap: 4 },
+    { breakpoint: "md", colCount: 3, gap: 4 },
+    { breakpoint: "lg", colCount: 4, gap: 4 },
   ]
 );

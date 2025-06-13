@@ -20,7 +20,7 @@ export interface BreakpointGridProps {
   gap: number;
 }
 
-const ROW_UNIT = 10; //px
+const ROW_UNIT = 4; //px
 
 export const generateMasonryGrid = (
   collection: CollectionProps[],
@@ -43,14 +43,14 @@ export const generateMasonryGrid = (
     const containerClass = classPrefix;
     gridContainer.classList.add(containerClass);
 
-    // Get actual column width minus gaps
+    // Get actual column width
     const parentWidth = parent.clientWidth;
     const totalGap = (colCount - 1) * gap;
     const colWidth = (parentWidth - totalGap) / colCount;
 
     collection.forEach((item, idx) => {
       const itemHeightPx = colWidth / item.aspectRatio;
-      const span = Math.ceil(itemHeightPx / ROW_UNIT);
+      const span = Math.ceil(itemHeightPx / (ROW_UNIT + gap));
       itemContainers[idx].style.gridRowEnd = `span ${span}`;
     });
 
