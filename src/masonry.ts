@@ -9,15 +9,20 @@ const minWidthForBreakpoints: Record<BreakpointType, number> = {
 
 export type BreakpointType = "default" | "sm" | "md" | "lg" | "xl" | "2xl";
 
+type ColSpanProps = {
+  [P in BreakpointType]?: number;
+};
+
 export interface CollectionProps {
   htmlElm: HTMLDivElement;
   aspectRatio: number;
+  customColSpan?: ColSpanProps;
 }
 
 export interface BreakpointGridProps {
   breakpoint: BreakpointType;
   colCount: number;
-  gap: number;
+  gap?: number;
 }
 
 const ROW_UNIT = 4; //px
@@ -25,20 +30,21 @@ const ROW_UNIT = 4; //px
 export const generateMasonryGrid = (
   collection: CollectionProps[],
   parent: HTMLDivElement,
-  layout: BreakpointGridProps[]
+  layout: BreakpointGridProps[],
+  itemContainerHeight?: CSSStyleDeclaration["height"]
 ) => {
   const styleElm = document.createElement("style");
   const gridContainer = document.createElement("div");
 
   const itemContainers = collection.map((item) => {
     const itemContainer = document.createElement("div");
-    itemContainer.style.height = "fit-content";
+    itemContainer.style.height = itemContainerHeight ?? "fit-content";
     itemContainer.appendChild(item.htmlElm);
     gridContainer.appendChild(itemContainer);
     return itemContainer;
   });
 
-  layout.forEach(({ breakpoint, colCount, gap }) => {
+  layout.forEach(({ breakpoint, colCount, gap = 0 }) => {
     const classPrefix = `masonry-grid-${breakpoint}`;
     const containerClass = classPrefix;
     gridContainer.classList.add(containerClass);
@@ -48,10 +54,24 @@ export const generateMasonryGrid = (
     const totalGap = (colCount - 1) * gap;
     const colWidth = (parentWidth - totalGap) / colCount;
 
-    collection.forEach((item, idx) => {
-      const itemHeightPx = colWidth / item.aspectRatio;
-      const span = Math.ceil(itemHeightPx / (ROW_UNIT + gap));
-      itemContainers[idx].style.gridRowEnd = `span ${span}`;
+    collection.forEach(({ aspectRatio, customColSpan }, idx) => {
+      const itemClass = classPrefix + "-item-" + idx;
+      itemContainers[idx].classList.add(itemClass);
+
+      const colSpanValue = customColSpan?.[breakpoint] ?? 1;
+
+      const itemHeightPx = (colWidth * colSpanValue) / aspectRatio;
+      
+      const rowSpanValue = Math.ceil(itemHeightPx / (ROW_UNIT + gap));
+
+      styleElm.innerHTML += `
+      @media (min-width: ${minWidthForBreakpoints[breakpoint]}px) {
+        .${itemClass} {
+          grid-column-end: ${colCount == 1 ? "unset" : "span " + colSpanValue};
+          grid-row-end: ${colCount == 1 ? "unset" : "span " + rowSpanValue};
+        }
+      }
+    `;
     });
 
     styleElm.innerHTML += `

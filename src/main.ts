@@ -37,7 +37,7 @@ const contentColl: CollectionProps[] = [
 
 const generateImage = (src: string) => {
   const img = document.createElement("img");
-  img.className = "h-auto max-w-full rounded-lg";
+  img.className = "h-full w-full rounded-lg object-cover block";
   img.src = src;
   return img;
 };
@@ -48,12 +48,18 @@ const images: CollectionProps[] = [
       "https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image-1.jpg"
     ),
     aspectRatio: 1.22,
+    customColSpan: {
+      md: 3,
+    },
   },
   {
     htmlElm: generateImage(
       "https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image-3.jpg"
     ),
     aspectRatio: 1.02,
+    customColSpan: {
+      lg: 2,
+    },
   },
   {
     htmlElm: generateImage(
@@ -72,6 +78,9 @@ const images: CollectionProps[] = [
       "https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image-7.jpg"
     ),
     aspectRatio: 1.31,
+    customColSpan: {
+      md: 3,
+    },
   }, //
   {
     htmlElm: generateImage(
@@ -172,5 +181,6 @@ generateMasonryGrid(
     { breakpoint: "default", colCount: 1, gap: 4 },
     { breakpoint: "md", colCount: 3, gap: 4 },
     { breakpoint: "lg", colCount: 4, gap: 4 },
-  ]
+  ],
+  "100%"
 );
